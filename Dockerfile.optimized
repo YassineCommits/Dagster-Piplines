@@ -15,7 +15,8 @@ RUN pip install --no-cache-dir \
     duckdb \
     pandas \
     numpy \
-    pyarrow
+    pyarrow \
+    requests
 
 # Create directory for pipeline code (will be mounted at runtime)
 RUN mkdir -p /opt/dagster/app/pipelines
