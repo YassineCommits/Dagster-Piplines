@@ -69,10 +69,6 @@ job "dagster-git-pipeline" {
         cpu    = 500
         memory = 1024
       }
-
-      depends_on {
-        task = "git-clone"
-      }
     }
 
     task "dagster-daemon" {

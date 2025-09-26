@@ -1,0 +1,24 @@
+FROM python:3.10-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt/dagster/app
+
+# Install Python dependencies first (for better caching)
+RUN pip install --no-cache-dir \
+    dagster==1.7.3 \
+    dagster-postgres==0.23.3 \
+    duckdb \
+    pandas \
+    numpy \
+    pyarrow
+
+# Create directory for pipeline code (will be mounted at runtime)
+RUN mkdir -p /opt/dagster/app/pipelines
+
+# Set the default command
+CMD ["dagster", "code-server", "start", "-h", "0.0.0.0", "-p", "3030", "-m", "pipelines.hello_world_pipeline.definitions"]
