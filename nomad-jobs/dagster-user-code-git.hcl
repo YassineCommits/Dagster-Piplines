@@ -18,13 +18,17 @@ job "dagster-user-code-git" {
     }
 
     task "git-clone" {
-      driver = "raw_exec"
+      driver = "docker"
       
       config {
-        command = "/bin/bash"
+        image = "alpine:latest"
+        command = "sh"
         args = [
           "-c",
-          "cd /tmp && rm -rf hello_world_pipeline && git clone https://github.com/YassineCommits/Dagster-Piplines.git temp_repo && cp -r temp_repo/pipelines/hello_world_pipeline . && rm -rf temp_repo && echo 'Git clone completed successfully'"
+          "apk add --no-cache git && cd /tmp && rm -rf pipelines && git clone https://github.com/YassineCommits/Dagster-Piplines.git temp_repo && cp -r temp_repo/dagster pipelines && rm -rf temp_repo && echo 'Git clone completed successfully'"
+        ]
+        volumes = [
+          "/tmp:/tmp"
         ]
       }
 
@@ -48,12 +52,12 @@ job "dagster-user-code-git" {
         ports      = ["grpc"]
         volumes = [
           "/tank/data:/tank/data",
-          "/tmp/hello_world_pipeline:/opt/dagster/app/pipelines/hello_world_pipeline"
+          "/tmp/pipelines:/opt/dagster/app/pipelines"
         ]
         command = "bash"
         args = [
           "-c",
-          "cd /opt/dagster/app && pip install -e pipelines && dagster code-server start -h 0.0.0.0 -p 3030 -m pipelines.hello_world_pipeline.definitions"
+          "cd /opt/dagster/app && pip install -e pipelines && dagster code-server start -h 0.0.0.0 -p 3030 -m pipelines.definitions"
         ]
       }
 
