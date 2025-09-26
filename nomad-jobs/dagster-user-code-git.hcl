@@ -25,7 +25,7 @@ job "dagster-user-code-git" {
         command = "sh"
         args = [
           "-c",
-          "apk add --no-cache git && cd /tmp && rm -rf pipelines && git clone https://github.com/YassineCommits/Dagster-Piplines.git temp_repo && cp -r temp_repo/pipelines pipelines && rm -rf temp_repo && echo 'Git clone completed successfully'"
+          "apk add --no-cache git && cd /tmp && rm -rf pipelines && git clone https://github.com/YassineCommits/Dagster-Piplines.git temp_repo && cp -r temp_repo/pipelines pipelines && rm -rf temp_repo && echo 'Git clone completed successfully' && ls -la pipelines"
         ]
         volumes = [
           "/tmp:/tmp"
