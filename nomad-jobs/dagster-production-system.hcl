@@ -54,9 +54,12 @@ job "dagster-production-system" {
           "-p",
           "3000",
           "-w",
-          "workspace.yaml"
+          "/opt/dagster/workspace.yaml"
         ]
         ports = ["http"]
+        volumes = [
+          "/opt/dagster/workspace.yaml:/opt/dagster/workspace.yaml"
+        ]
       }
 
       env {

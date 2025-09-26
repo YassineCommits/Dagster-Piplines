@@ -1,5 +1,5 @@
 load_from:
   - grpc_server:
-      host: "10.0.4.20" # Will be updated dynamically
+      host: "10.120.236.126"
       port: 3030
       location_name: "git_pipeline_location"
