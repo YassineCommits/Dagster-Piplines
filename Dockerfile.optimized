@@ -1,6 +1,5 @@
 FROM python:3.10-slim
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     gcc \
@@ -22,4 +21,4 @@ RUN pip install --no-cache-dir \
 RUN mkdir -p /opt/dagster/app/pipelines
 
 # Set the default command
-CMD ["dagster", "code-server", "start", "-h", "0.0.0.0", "-p", "3030", "-m", "pipelines.hello_world_pipeline.definitions"]
+CMD ["dagster", "code-server", "start", "-h", "0.0.0.0", "-p", "3030", "-m", "pipelines.definitions"]
