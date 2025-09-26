@@ -1,0 +1,6 @@
+dagster==1.7.3
+dagster-postgres==0.23.3
+duckdb
+pandas
+numpy
+pyarrow
