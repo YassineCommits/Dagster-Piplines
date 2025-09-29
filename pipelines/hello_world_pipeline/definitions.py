@@ -129,15 +129,14 @@ def clickhouse_etl_asset(context, duckdb_parquet_asset):
     if response.status_code != 200:
         raise Exception(f"Failed to create table: {response.text}")
     
-    # Copy parquet file to ClickHouse user_files directory
+    # Load data into ClickHouse using HTTP interface
+    # Read the parquet file and send it directly to ClickHouse
     parquet_filename = f"hello_world_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.parquet"
-    copy_command = f"cp {duckdb_parquet_asset} /var/lib/clickhouse/user_files/{parquet_filename}"
     
-    context.log.info(f"Copying parquet file: {copy_command}")
-    os.system(copy_command)
+    context.log.info(f"Loading parquet file: {duckdb_parquet_asset}")
     
-    # Load data into ClickHouse
-    load_query = f"INSERT INTO {table_name} SELECT * FROM file('/var/lib/clickhouse/user_files/{parquet_filename}', Parquet)"
+    # Load data into ClickHouse using INSERT with file() function
+    load_query = f"INSERT INTO {table_name} SELECT * FROM file('{duckdb_parquet_asset}', Parquet)"
     
     context.log.info(f"Loading data into ClickHouse table: {table_name}")
     response = requests.post(f"{base_url}/?user={clickhouse_user}&password={clickhouse_password}", 
