@@ -136,6 +136,7 @@ def clickhouse_etl_asset(context, duckdb_parquet_asset):
     context.log.info(f"Loading parquet file: {duckdb_parquet_asset}")
     
     # Load data into ClickHouse using INSERT with file() function
+    # The parquet file is accessible from ClickHouse container at the same path
     load_query = f"INSERT INTO {table_name} SELECT * FROM file('{duckdb_parquet_asset}', Parquet)"
     
     context.log.info(f"Loading data into ClickHouse table: {table_name}")
