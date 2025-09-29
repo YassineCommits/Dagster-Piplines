@@ -135,16 +135,35 @@ def clickhouse_etl_asset(context, duckdb_parquet_asset):
     
     context.log.info(f"Loading parquet file: {duckdb_parquet_asset}")
     
-    # Load data into ClickHouse using INSERT with file() function
-    # The parquet file is accessible from ClickHouse container at the same path
-    load_query = f"INSERT INTO {table_name} SELECT * FROM file('{duckdb_parquet_asset}', Parquet)"
+    # Load data into ClickHouse by reading parquet file and inserting directly
+    context.log.info(f"Reading parquet file: {duckdb_parquet_asset}")
     
-    context.log.info(f"Loading data into ClickHouse table: {table_name}")
-    response = requests.post(f"{base_url}/?user={clickhouse_user}&password={clickhouse_password}", 
-                           data=load_query, timeout=60)
+    # Read the parquet file
+    import pandas as pd
+    df = pd.read_parquet(duckdb_parquet_asset)
     
-    if response.status_code != 200:
-        raise Exception(f"Failed to load data: {response.text}")
+    # Insert data row by row
+    for _, row in df.iterrows():
+        insert_query = f"""
+        INSERT INTO {table_name} VALUES (
+            '{row['city']}', 
+            '{row['department']}', 
+            {row['total_users']}, 
+            {row['average_age']}, 
+            {row['total_salary']}, 
+            {row['average_salary']}, 
+            {row['min_salary']}, 
+            {row['max_salary']}
+        )
+        """
+        
+        response = requests.post(f"{base_url}/?user={clickhouse_user}&password={clickhouse_password}", 
+                               data=insert_query, timeout=30)
+        
+        if response.status_code != 200:
+            raise Exception(f"Failed to insert row: {response.text}")
+    
+    context.log.info(f"Successfully inserted {len(df)} rows into ClickHouse")
     
     # Verify data was loaded
     verify_query = f"SELECT COUNT(*) as total_records FROM {table_name}"
